@@ -51,7 +51,6 @@ def GatherInfo():
         file_extension.append(path.splitext(file)[1])
 
         print("====================================")
-        print(track_num)
 
 def ChangeTag(raw_dir,files,title,artist,album,track_num):
     for index in range(len(files)):
