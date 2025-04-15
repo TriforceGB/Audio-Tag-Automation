@@ -3,7 +3,7 @@ from os import path,listdir
 from shutil import move 
 
 # Other Folder
-from Mutagen_Tagger import ChangeTag
+from taglib_Tagger import ChangeTag
 
 def GatherInfo():
     
@@ -64,6 +64,6 @@ def MoveFiles(raw_dir,edited_dir,files):
 if __name__ == "__main__":
     raw_dir, edited_dir, cover_dir, files, file_extension, title, artist, album, track_num, cover = GatherInfo()
     print("Taging")
-    ChangeTag(raw_dir,files,file_extension,title,artist,album,track_num)
+    ChangeTag(raw_dir,files,title,artist,album,track_num,cover)
     print("Moving Files")
     MoveFiles(raw_dir,edited_dir,files)

@@ -1,9 +1,11 @@
 from mutagen.mp4 import MP4, MP4Cover
 from mutagen.mp3 import MP3
+from mutagen.id3 import ID3, APIC, error
+from mutagen.wave import WAVE
 
 def ChangeTag(raw_dir,files,file_extension,title,artist,album,track_num):
     for index in range(len(files)):
-        try:
+        # try:
             # For .m4a
             if file_extension[index] == '.m4a':  
                 song = MP4(raw_dir+"\\"+files[index])
@@ -26,7 +28,17 @@ def ChangeTag(raw_dir,files,file_extension,title,artist,album,track_num):
                 song["TRCK"] = track_num[index]
                 
                 song.save()
+            elif file_extension[index] == '.wav':
+                song = ID3(raw_dir+"\\"+files[index])
+
+                song["INAM"] = title[index]
+                song["IART"] = artist[index]
+                song["IALB"] = album[index]
+                song["ITRK"] = track_num[index]
+                
+                song.save()     
+            
             else:
                 print("File Extension Not Recognized: ",file_extension[index])
-        except Exception as e:
-            print(e)
+        # except Exception as e:
+        #     print(e)
