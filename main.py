@@ -1,69 +1,93 @@
 # Libraries
-from os import path,listdir
-from shutil import move 
+from os import remove, rename, makedirs, path
+from shutil import move
+from re import sub
 
-# Other Folder
-from taglib_Tagger import ChangeTag
+# Imports
+from Tagger import EditTag
+from audio_downloader import download_audio
+from musicBrainz import callDB,getcoverImage
 
-def GatherInfo():
+
+song_info: dict = {
+    'title': "",
+    # 'file-name': "",
+    'artist': "",
+    'album_artist': "",
+    'album': "",
+    'disc_number': "",
+    'total_discs': "",
+    'track_number':"",
+    'total_tracks': "",
+    'release_date': "",
+    'year': "",
+    'genre': "", 
+    'audio_path': "",
+    'cover_path': "",
+    'MB_album_artist_id': "",
+    'MB_album_id': "",
+    'MB_other_artist_id': "", 
+    'MB_release_group_id': "",
+    'MB_release_id': "",
+    'MB_track_id': ""
+} 
+
+def cleanName(name: str) -> str:
+    # Clean up Name for Windows to be Happy
+    invalid_chars = r'[<>:"/\\|?*\x00-\x1F]'
+    name = sub(invalid_chars, '', name)
+    return name 
+
+def rename_song(audio_path: str, Download_Dir: str, title: str, artist: str) -> str:
+    # Rename
+    newName = cleanName(f"{title}-{artist}.m4a")
+    rename(audio_path,path.join(Download_Dir,newName))
+    return newName
+
+def Album_Folder(Music_Dir: str, album: str, filename: str) -> str:
+    Song_Folder = f"{Music_Dir}\\{cleanName(album)}"
+    makedirs(Song_Folder,exist_ok=True)
+    return Song_Folder
     
-    title = []
-    artist = []
-    album = []
-    track_num = []
-    file_extension = []
-    cover = []
+def move_song(Song_Folder: str, Download_Dir: str, filename: str):
+    move(path.join(Download_Dir,filename), path.join(Song_Folder,filename))
     
-    raw_dir = input("Enter the path to the raw songs directory: ")
-    edited_dir = input("Enter the path to the edited songs directory: ")
-    cover_dir = input("Enter the path to the cover directory: ")
+
+def main(Download_Dir: str, Music_Dir: str, askforID: bool, keepImages: bool) -> None: 
     
-    if (input(" Use the Same album for all songs? (y/n) ") == "y"):
-        all_album = input("Enter the album of the song: ")
-        use_same_album = True
+    url = input("Enter YouTube video URL: ")
+
+    dl_info = download_audio(url,Download_Dir,'m4a')
+    song_info.update(dl_info)
+    if askforID:
+        id = input("Enter ID: ")
     else:
-        use_same_album = False
+        pass #Where we Sreach for the Song
+    db_info = callDB(id)
+    song_info.update(db_info)
+    print(song_info)
+    getcoverImage(song_info['MB_release_id'],song_info['cover_path'])
+    EditTag(song_info)
     
-    files = listdir(raw_dir)
+    # Rename
+    newName = rename_song(song_info['audio_path'],Download_Dir,song_info['title'],song_info['artist'])
     
-    for file in files:
-        print("For File Called: ",file)
-        
-        input_title = input("Enter the title of the song: ")
-        if input_title != "":
-            title.append(input_title)
-        else:
-            title.append(path.splitext(file)[0])
-        artist.append(input("Enter the artist of the song: "))
-        
-        if (use_same_album):
-            album.append(all_album)
-        else:
-            album.append(input("Enter the album of the song: "))
-            
-        track_num.append(input("Enter the track number of the song: "))
-        file_extension.append(path.splitext(file)[1])
+    # Create Folder
+    AlbumFolder = Album_Folder(Music_Dir,song_info['album'],newName)
 
-        print("====================================")
-        
-    return raw_dir, edited_dir, cover_dir, files, file_extension, title, artist, album, track_num, cover
-            
-def MoveFiles(raw_dir,edited_dir,files):
-    for index in range(len(files)):
-        try:
-            if (artist[index] == ""):
-                move(raw_dir+"\\"+files[index],edited_dir+"\\"+title[index]+file_extension[index])
-            else:
-                move(raw_dir+"\\"+files[index],edited_dir+"\\"+title[index]+" - "+artist[index]+file_extension[index])
-        except Exception as e:
-            print(e)
-        
-
+    # Move Song
+    move_song(AlbumFolder,Download_Dir,newName)
+    
+    # Delete Images
+    if keepImages:
+        pass
+    else:
+        remove(song_info['cover_path'])
     
 
 if __name__ == "__main__":
-    raw_dir, edited_dir, cover_dir, files, file_extension, title, artist, album, track_num, cover = GatherInfo()
-    print("Taging")
-    ChangeTag(raw_dir,files,title,artist,album,track_num,cover)
-    print("Moving Files")
-    MoveFiles(raw_dir,edited_dir,files)
+    keepImages = False
+    askforID = True
+    Download_Dir = '.\\downloads'
+    Music_Dir = 'S:\\mediafiles\\music'
+    main(Download_Dir,Music_Dir,askforID,keepImages)
