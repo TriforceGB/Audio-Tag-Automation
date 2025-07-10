@@ -2,6 +2,8 @@ from yt_dlp import YoutubeDL
 from os import path
 
 def download_audio(url: str, output_path: str, filetype='m4a') -> str: 
+    # Used to Download Audio from Youtube
+    # 
     ydl_opts = {
         'final_ext': 'm4a',
         'outtmpl': path.join(output_path,'%(title)s.%(ext)s'),

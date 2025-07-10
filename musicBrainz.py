@@ -1,16 +1,22 @@
+# Libraries
 import musicbrainzngs
 from time import sleep
 from os import remove, path
+# File Imports
+from GenreChecker import CheckGenre
 
-#prob do this idk
+#TODO
+#add auth so I can Submit Tags
 #musicbrainzngs.auth()
-musicbrainzngs.set_useragent("Audio Downloader into MusicBrainz Tag for Local Audio (Need a better name lol)", "0.1", "Zach.Schultz.2.0.1@gmail.com")
-    
-def SearchDB(SongName: str):
-    pass
+# Setting User Agent to use API
+# There prob a better way to init this but idc
+musicbrainzngs.set_useragent("Audio Downloader into MusicBrainz Tag for Local Audio (Need a better name lol)", "0.2", "Zach.Schultz.2.0.1@gmail.com")
 
-def callDB(RecordingID: str) -> dict: # When we know the Song to get the Data from it
-    while True: # Set this to some Time Out 
+
+def callDB(RecordingID: str) -> dict: 
+    # Take the Recording ID and find the rest of the MetaData
+    while True: #TODO Set this to some Time Out 
+        # Calling the API to get all the Info I need 
         try:
             Recording_Data = musicbrainzngs.get_recording_by_id(
                 RecordingID,
@@ -18,7 +24,9 @@ def callDB(RecordingID: str) -> dict: # When we know the Song to get the Data fr
                     'artists',
                     'releases',
                     'release-group-rels',
-                    'media'
+                    'media',
+                    'tags'
+                    
                 ]
             )
             Release_Data = musicbrainzngs.get_release_by_id(
@@ -28,13 +36,18 @@ def callDB(RecordingID: str) -> dict: # When we know the Song to get the Data fr
                     "media"
                     ]
             )
+            Release_Group_Data = musicbrainzngs.get_release_group_by_id(
+                Release_Data['release']['release-group']['id'],
+                includes=[
+                    'tags'
+                    ]
+            )
             break
         except Exception as exc:
             print("Something went wrong with the request: %s" % exc)
             sleep(3)   
     
-    
-
+    # Spliting the Info into Useable Vars
     recording = Recording_Data["recording"] 
     artist_credit = recording["artist-credit"]
     release_list = recording["release-list"][0] # we just take the first one
@@ -42,21 +55,36 @@ def callDB(RecordingID: str) -> dict: # When we know the Song to get the Data fr
     release = Release_Data['release']
     release_group = release['release-group']
     type = release_group['type']
+    
+    
 
-
-    print(Release_Data)
+            
     # Grabing Artist Data
-    temp_artist = []
-    temp_artist_ID = []
+    artist: list
+    artist_ID: list
 
     for parts in artist_credit:
         if "artist" in parts:
-            temp_artist.append(parts['artist']['name'])
-            temp_artist_ID.append(parts['artist']['id'])
+            artist.append(parts['artist']['name'])
+            artist_ID.append(parts['artist']['id'])
+            
+    # Grabing Genres
+    tags: dict
+    Genres: list
     
+    if 'tag-list' in recording: # Uses the Tags on the Recording First
+        tags = recording['tag-list']
+    elif 'tag-list' in Release_Group_Data['release-group']: # If Recording Tags don't Exist Use the ones on the Release Group
+        tags = Release_Group_Data['release-group']['tag-list']
+    
+    for tag in tags: # Check all the Tags for the Genres
+        if CheckGenre(tag['name']):
+            Genres.append(tag['name'])
+    
+    # add all the meta data into a Dict
     song_info: dict = {
         'title': recording['title'],
-        'artist': ';'.join(temp_artist),
+        'artist': artist,
         'album_artist': release_list['artist-credit'][0]['artist']['name'], # if type != "Single" else "",
         'album': release_list['title'], # if type != "Single" else "",
         'disc_number': medium_list['position'], 
@@ -65,30 +93,14 @@ def callDB(RecordingID: str) -> dict: # When we know the Song to get the Data fr
         'total_tracks': medium_list['track-count'],
         'release_date': release_list['date'],
         'year': release_list['date'].split("-")[0] if release_list['date'] != "" else "",
-        'genre': "", #TODO
-        'MB_album_artist_id': temp_artist_ID[0],
+        'genre': Genres,
+        'MB_album_artist_id': artist_ID[0],
         'MB_album_id': release_list['id'],
-        'MB_other_artist_id': temp_artist_ID[1] if len(temp_artist_ID) > 1 else "", 
+        'MB_other_artist_id': artist_ID[1] if len(artist_ID) > 1 else "", 
         'MB_release_group_id': release_group['id'],
         'MB_release_id': release['id'],
         'MB_track_id': recording['id']
     } 
-    
-    print('title:',song_info['title'])
-    print('artist:',song_info['artist'])
-    print('album_artist:',song_info['album_artist'])
-    print('album:',song_info['album'])
-    print('disc_number:',song_info['disc_number'])
-    print('total_discs:',song_info['total_discs'])
-    print('track_number:',song_info['track_number'])
-    print('total_tracks:',song_info['total_tracks'])
-    print('release_data:',song_info['release_date'])
-    print('year:',song_info['year'])
-    print('MB_album_artist_id:',song_info['MB_album_artist_id'])
-    print('MB_album_id:',song_info['MB_album_id'])
-    print('MB_other_artist_id:',song_info['MB_other_artist_id'])
-    print('MB_release_group_id:',song_info['MB_release_group_id'])
-    print('MB_track_id:',song_info['MB_track_id'])
     return song_info
 
 def getcoverImage(release_id: dict, cover_path: str):
@@ -103,6 +115,9 @@ def getcoverImage(release_id: dict, cover_path: str):
     print(cover_path)
     with open(cover_path, 'wb') as f:
         f.write(image_data)
+        
+def submitTag(type: str, id: str, tag: str):
+    pass #idk how this works
     
     
 if __name__ == "__main__":
