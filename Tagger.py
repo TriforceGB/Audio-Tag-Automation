@@ -22,12 +22,11 @@ def EditTag(song_info: dict) -> None:
     song["covr"] = [cover]
     #TODO
     # Custom Tags for Musicbrainz
-    song["----:com.apple.iTunes:MUSICBRAINZ_ALBUMARTISTID"] = MP4FreeForm(song_info['MB_album_artist_id'].encode('utf-8'))
-    song["----:com.apple.iTunes:MUSICBRAINZ_ALBUMID"] = MP4FreeForm(song_info['MB_album_id'].encode('utf-8'))
-    song["----:com.apple.iTunes:MUSICBRAINZ_ARTISTID"] = MP4FreeForm(song_info['MB_other_artist_id'].encode('utf-8'))
-    song["----:com.apple.iTunes:MUSICBRAINZ_RELEASEGROUPID"] = MP4FreeForm(song_info['MB_release_group_id'].encode('utf-8'))
-    song["----:com.apple.iTunes:MUSICBRAINZ_RELEASETRACKID"] = MP4FreeForm(song_info['MB_release_id'].encode('utf-8'))
-    song["----:com.apple.iTunes:MUSICBRAINZ_TRACKID"] = MP4FreeForm(song_info['MB_track_id'].encode('utf-8'))
+    song["----:com.apple.iTunes:MUSICBRAINZ_ALBUMARTIST_ID"] = MP4FreeForm(song_info['MB_album_artist_id'].encode('utf-8'))
+    song["----:com.apple.iTunes:MUSICBRAINZ_ALBUM_ID"] = MP4FreeForm(song_info['MB_album_id'].encode('utf-8'))
+    song["----:com.apple.iTunes:MUSICBRAINZ_OTHERARTIST_ID"] = MP4FreeForm(song_info['MB_other_artist_id'].encode('utf-8'))
+    song["----:com.apple.iTunes:MUSICBRAINZ_RELEASEGROUP_ID"] = MP4FreeForm(song_info['MB_release_group_id'].encode('utf-8'))    
+    song["----:com.apple.iTunes:MUSICBRAINZ_TRACK_ID"] = MP4FreeForm(song_info['MB_track_id'].encode('utf-8'))
     # Maybe add the acoustid not sure
     song.save()
     

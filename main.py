@@ -1,18 +1,25 @@
 # Libraries
-from os import remove, rename, makedirs, path
+from os import remove, rename, makedirs, path, getenv
 from shutil import move
-from re import sub
+
 
 # File Imports
 from Tagger import EditTag
 from audio_downloader import download_audio
-from musicBrainz import callDB,getcoverImage
+from musicBrainz import MusicBrainz_init,callDB,getcoverImage
 from Cover_Edits import crop_cover
 from ManualEdit import AddMissing, DictPrintout
+from FileRenaming import cleanName, RenameSong
 
+# API Key Imports
+ACOUSTID_USER_API=getenv('ACOUSTID_USER_API')
+ACOUSTID_APP_API=getenv('ACOUSTID_APP_API')
+MUSICBRAINZ_USER=getenv('MUSICBRAINZ_USER')
+MUSICBRAINZ_PASS=getenv('MUSICBRAINZ_PASS')
 
 song_info: dict = {
     'title': "",
+    'sort_title': "",
     'artist': [],
     'album_artist': "",
     'album': "",
@@ -26,7 +33,6 @@ song_info: dict = {
     'audio_path': "",
     'cover_path': "",
     'cropped_cover_path': "",
-    'acoustid': "",
     'MB_album_artist_id': "",
     'MB_album_id': "",
     'MB_other_artist_id': "", 
@@ -34,18 +40,6 @@ song_info: dict = {
     'MB_release_id': "",
     'MB_track_id': ""
 } 
-
-def cleanName(name: str) -> str:
-    # Clean up Name for Windows to be Happy
-    invalid_chars = r'[<>:"/\\|?*\x00-\x1F]'
-    name = sub(invalid_chars, '', name)
-    return name 
-
-def rename_song(audio_path: str, Download_Dir: str, title: str, artist: str) -> str:
-    # Rename
-    newName = cleanName(f"{title}-{artist}.m4a")
-    rename(audio_path,path.join(Download_Dir,newName))
-    return newName
 
 def Album_Folder(Music_Dir: str, album: str, filename: str) -> str:
     Song_Folder = f"{Music_Dir}\\{cleanName(album)}"
@@ -56,7 +50,9 @@ def move_song(Song_Folder: str, Download_Dir: str, filename: str):
     move(path.join(Download_Dir,filename), path.join(Song_Folder,filename))
     
 
-def main(Download_Dir: str, Music_Dir: str, askforID: bool, keepImages: bool) -> None: 
+
+
+def main(Download_Dir: str, Music_Dir: str, askforID: bool, keepImages: bool, OnlyEnglishNames: bool) -> None: 
     while True:
         try:
             url = input("Enter YouTube video URL: ")
@@ -69,7 +65,8 @@ def main(Download_Dir: str, Music_Dir: str, askforID: bool, keepImages: bool) ->
         id = input("Enter ID: ")
     else:
         pass #Where we Search for the Song
-    db_info = callDB(id)
+    MusicBrainz_init(MUSICBRAINZ_USER,MUSICBRAINZ_PASS)
+    db_info = callDB(id,OnlyEnglishNames)
     song_info.update(db_info)
     print(song_info)
     getcoverImage(song_info['MB_release_id'],song_info['cover_path'])
@@ -79,7 +76,7 @@ def main(Download_Dir: str, Music_Dir: str, askforID: bool, keepImages: bool) ->
     EditTag(song_info)
     
     # Rename
-    newName = rename_song(song_info['audio_path'],Download_Dir,song_info['title'],song_info['album_artist'])
+    newName = RenameSong(song_info['audio_path'],Download_Dir,song_info['title'],song_info['album_artist'])
     
     # Create Folder
     AlbumFolder = Album_Folder(Music_Dir,song_info['album'],newName)
@@ -99,6 +96,7 @@ def main(Download_Dir: str, Music_Dir: str, askforID: bool, keepImages: bool) ->
 if __name__ == "__main__":
     keepImages = False
     askforID = True
+    OnlyEnglishNames = False
     Download_Dir = '.\\downloads'
-    Music_Dir = '.\\Done'
-    main(Download_Dir,Music_Dir,askforID,keepImages)
+    Music_Dir =  '.\\Done'#'S:\\mediafiles\\music'
+    main(Download_Dir,Music_Dir,askforID,keepImages,OnlyEnglishNames)

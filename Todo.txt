@@ -4,3 +4,4 @@ Download Via Playlist
 Delete files if exist?
 make sure to grab English Data?
 ctrl h tags?
+When downloading an album have a red flag for a differnt album in the mix

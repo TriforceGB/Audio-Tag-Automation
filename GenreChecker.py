@@ -2054,4 +2054,5 @@ Genre = [
 
 # Check the Genere List to see if its a real Genre
 def CheckGenre(GenreName: str) -> bool:
+    print(f"{GenreName} Is not a MusicBrainz Genre")
     return GenreName in Genre
