@@ -2,8 +2,8 @@
 import musicbrainzngs
 from time import sleep
 # File Imports
-from GenreChecker import CheckGenre
-from FileRenaming import cleanName
+from genre_checker import CheckGenre
+from file_management import CleanName
 
 # There prob a better way to init this but idc
 def MusicBrainz_init(MUSICBRAINZ_USER:str, MUSICBRAINZ_PASS:str):
@@ -11,7 +11,7 @@ def MusicBrainz_init(MUSICBRAINZ_USER:str, MUSICBRAINZ_PASS:str):
     musicbrainzngs.auth(MUSICBRAINZ_USER, MUSICBRAINZ_PASS)
     musicbrainzngs.set_format(fmt='json')
 
-def callDB(RecordingID: str, UseEnglishNames: bool) -> dict: 
+def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict: 
     # Take the Recording ID and find the rest of the MetaData
     while True: #TODO Set this to some Time Out 
         # Calling the API to get all the Info I need 
@@ -97,16 +97,16 @@ def callDB(RecordingID: str, UseEnglishNames: bool) -> dict:
         # What to Do if No English Title found
         if title == "" and UseEnglishNames == True:
             title = input(f"No English Title Found for '{recording['title']}', Enter Title or Leave Blank for Original: ")
-            sort_title = cleanName(title).lower()
+            sort_title = CleanName(title).lower()
     # If no Alias Exist
     elif UseEnglishNames == True:
         title = input(f"No alias found, Enter Title or leave blank for '{recording['title']}': ")
-        sort_title = cleanName(title).lower()
+        sort_title = CleanName(title).lower()
             
     # A Catch All for if no Name is Inputed
     if title == "":
         title = recording['title']
-        sort_title = cleanName(title).lower()
+        sort_title = CleanName(title).lower()
     
     # Grabing Artists 
     for artist_data in artist_credit:
@@ -157,8 +157,7 @@ def callDB(RecordingID: str, UseEnglishNames: bool) -> dict:
     # adding info to lists
     album_artist = album_artist_name
     MB_album_artist_id = release['artist-credit'][0]['artist']['id']
-    
-    
+        
     # Grabing Album
     # This may Need to be change depening if all Album Artist Match the Album Lanaguage
     # Looking for English Title 
@@ -170,9 +169,12 @@ def callDB(RecordingID: str, UseEnglishNames: bool) -> dict:
                 album = aliases['name']
                 break
         if album == "" and UseEnglishNames == True: 
-            album = input(f"No English Name Found for Album '{release['title']}, Enter Name: ")
+            album = input(f"No English Name Found for Album, Enter Name or Leave Blank for: '{release['title']}: ")
     else:
-        album = input(f"No English Name Found for Album '{release['title']}, Enter Name: ")
+        album = input(f"No English Name Found for Album, Enter Name or Leave Blank for: '{release['title']}: ")
+    # A Catch All for if no Name is Inputed
+    if album == '':
+        album = release['title']
             
             
             
@@ -244,6 +246,6 @@ if __name__ == "__main__":
     download_dir = 'downloads'
     cover_file = '.\\downloads\\cover.jpg'
     NonAllowEnglishNames = True
-    song_info = callDB(ID,True)
+    song_info = MusicBrainzFetch(ID,True)
     print(song_info)
     getcoverImage(song_info['MB_release_id'],cover_file)

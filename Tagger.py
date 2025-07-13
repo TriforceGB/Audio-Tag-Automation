@@ -1,17 +1,48 @@
 # Libraries
 from mutagen.mp4 import MP4, MP4Cover, MP4FreeForm
+from genre_checker import CheckGenre
 
 # Uses Mutagen to Tag all the M4A
 # Only Support M4A becuase idk i'm wried
-def EditTag(song_info: dict) -> None:
+
+def ManualAddTag(song_info: dict, ManualTagging: bool) -> bool:
+    ChangeMade: bool = False
+    for key, value in song_info.items():
+        if ((value == "" or value == []) and key != 'MB_other_artist_id' ) or ManualTagging == True:
+            if key == "artist" or key == "album_artist" or key == "genre":
+                print("----------")
+                print(f"info missing: {key}")
+                newList = []
+                while True:
+                    newvalue = input("Enter Value or Space to end: ").lower()
+                    if newvalue == "":
+                        break
+                    else: 
+                        if key == "genre" and not CheckGenre(newvalue):
+                            continue
+                        newList.append(newvalue)
+                    if len(newList) > 0:
+                        ChangeMade = True
+                        song_info[key] = newList
+            else:
+                print("----------")
+                print(f"info missing: {key}")
+                value = input(f"Enter Value: ").lower()
+                if value != "":
+                    ChangeMade == True
+                    song_info[key] = value 
+                
+    return song_info, ChangeMade
+def EditTag(song_info: dict, audio_path: str, cover_path: str) -> None:
     # Grabs the Crop Cover Image
-    with open(song_info['cropped_cover_path'], 'rb') as f:
+    with open(cover_path, 'rb') as f:
         cover_data = f.read()
         cover = MP4Cover(cover_data,imageformat=MP4Cover.FORMAT_JPEG)
     # Tag List in wried names becuase of stuff Not sure
     # Just find the List on Mutagen Docs
-    song = MP4(song_info['audio_path'])
+    song = MP4(audio_path)
     song["\xa9nam"] = song_info['title']
+    song["----:com.apple.iTunes:SORT_TITLE"] = MP4FreeForm(song_info['sort_title'].encode('utf-8'))
     song["\xa9ART"] = song_info['artist']
     song["aART"] = song_info['album_artist']
     song["\xa9alb"] = song_info['album']
@@ -20,13 +51,13 @@ def EditTag(song_info: dict) -> None:
     song["\xa9day"] = song_info['release_date']
     song["\xa9gen"] = song_info['genre']
     song["covr"] = [cover]
-    #TODO
-    # Custom Tags for Musicbrainz
-    song["----:com.apple.iTunes:MUSICBRAINZ_ALBUMARTIST_ID"] = MP4FreeForm(song_info['MB_album_artist_id'].encode('utf-8'))
-    song["----:com.apple.iTunes:MUSICBRAINZ_ALBUM_ID"] = MP4FreeForm(song_info['MB_album_id'].encode('utf-8'))
-    song["----:com.apple.iTunes:MUSICBRAINZ_OTHERARTIST_ID"] = MP4FreeForm(song_info['MB_other_artist_id'].encode('utf-8'))
-    song["----:com.apple.iTunes:MUSICBRAINZ_RELEASEGROUP_ID"] = MP4FreeForm(song_info['MB_release_group_id'].encode('utf-8'))    
-    song["----:com.apple.iTunes:MUSICBRAINZ_TRACK_ID"] = MP4FreeForm(song_info['MB_track_id'].encode('utf-8'))
+    # Custom Tags for Musicbrain
+    song["----:com.apple.iTunes:MUSICBRAINZ_ALBUMARTISTID"] = MP4FreeForm(song_info['MB_album_artist_id'].encode('utf-8'))
+    song["----:com.apple.iTunes:MUSICBRAINZ_ALBUMID"] = MP4FreeForm(song_info['MB_album_id'].encode('utf-8'))
+    song["----:com.apple.iTunes:MUSICBRAINZ_ARTISTID"] = MP4FreeForm(song_info['MB_other_artist_id'].encode('utf-8'))
+    song["----:com.apple.iTunes:MUSICBRAINZ_RELEASEGROUPID"] = MP4FreeForm(song_info['MB_release_group_id'].encode('utf-8'))    
+    song["----:com.apple.iTunes:MUSICBRAINZ_RELEASETRACKID"] = MP4FreeForm(song_info['MB_track_id'].encode('utf-8'))
+    song["----:com.apple.iTunes:ACOUSTID_ID"] = MP4FreeForm(song_info['AcoustID'].encode('utf-8'))
     # Maybe add the acoustid not sure
     song.save()
     

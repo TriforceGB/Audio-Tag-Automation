@@ -1,0 +1,100 @@
+# we would have some class which would be the song class 
+# each object would be a new song we wanted to download 
+# each object would have a URl for the song at it start point
+# we would want to store object in a list or something like that
+# also for playlist download we would want it to take the song at a list of url not have it download all the files
+
+
+# File Imports
+from youtube_downloads import FetchSongInfo, DownloadAudio
+from acoust_id import GetFingerprint
+from musicbrainz_fetch import MusicBrainzFetch
+from genre_checker import CheckGenre
+from file_management import RenameSong,AlbumFolder,MoveSong,RemoveCover
+from cover_crop import CropCover
+from tagger import ManualAddTag,EditTag
+class song:
+    def __init__(self, url:str):
+        self.url: str = url
+        self.fingerprint: str
+        self.filename: str
+        self.audio_path: str
+        self.cover_path: str
+        self.cropped_cover_path: str
+        self.album_folder: str
+        self.song_info: dict = {
+                                'title': "",
+                                'sort_title': "",
+                                'artist': [],
+                                'album_artist': "",
+                                'album': "",
+                                'disc_number': "",
+                                'total_discs': "",
+                                'track_number':"",
+                                'total_tracks': "",
+                                'release_date': "",
+                                'year': "",
+                                'genre': [], 
+                                'MB_album_artist_id': "",
+                                'MB_album_id': "",
+                                'MB_other_artist_id': "", 
+                                'MB_release_group_id': "",
+                                'MB_release_id': "",
+                                'MB_track_id': "",
+                                'AcoustID': ""
+                                }
+    # Prints all the Info on Song Info 
+    def print_info(self) -> None:
+        for k, v in self.song_info.items():
+            print(f"{k}: {v}")
+    # Manually edits song info if they are missing
+    def manual_edit(self, ManualTagging:bool) -> bool:
+        self.print_info()
+        ManualTagging_info, ChangeMade = ManualAddTag(self.song_info,ManualTagging)
+        self.song_info.update(ManualTagging_info)
+        return ChangeMade
+        
+    # Fetches Song Info From Youtube
+    def youtube_fetch(self) -> str:
+        fetch_info = FetchSongInfo(self.url)
+        self.song_info.update(fetch_info)
+        return self.song_info['title']
+        
+    # Downloads Song From Youtube
+    def youtube_download(self, DownloadDir:str) -> str:
+        self.filename,self.audio_path,self.cover_path = DownloadAudio(self.url,DownloadDir)
+        return self.audio_path
+    
+    # Get Fingerprint, RID, and AcoustID
+    def acoustid_fingerprint(self,ACOUSTID_APP_API:str,ManualIntervention:bool) -> str:
+        print(self.audio_path)
+        acoustid_info, fingerprint = GetFingerprint(self.audio_path,ACOUSTID_APP_API,ManualIntervention)
+        self.song_info.update(acoustid_info)
+        self.fingerprint = fingerprint
+        return self.fingerprint
+    # Submit Fingerprint Back to the DB
+    def acoustid_submit_fingerprint(self) -> None:
+        pass
+    
+    # Uses Recording ID to get all the MetaData
+    def musicbrainz_search(self, ManualIntervention:bool) -> None:
+        MusicBrainz_info = MusicBrainzFetch(self.song_info['MB_track_id'],ManualIntervention)
+        self.song_info.update(MusicBrainz_info)
+    # Submits Added Edits to the DB
+    def musicbrainz_submit(self) -> None:
+        pass
+    
+    def crop_cover(self,DownloadDir:str) -> str:
+        self.cropped_cover_path = CropCover(self.cover_path,DownloadDir)
+        
+    def add_tags(self) -> None:
+        EditTag(self.song_info,self.audio_path,self.cropped_cover_path)
+
+    def rename_song(self,DownloadDir:str) -> None:
+        self.filename,self.audio_path = RenameSong(self.audio_path,DownloadDir,self.song_info['title'],self.song_info['album_artist'])
+    def create_album_folder(self,MusicDir:str) -> None:
+        self.album_folder = AlbumFolder(MusicDir,self.song_info['album'])
+    def move_song(self) -> None:
+        MoveSong(self.audio_path,self.album_folder,self.filename)
+    def remove_cover(self) -> None:
+        RemoveCover(self.cover_path,self.cropped_cover_path)

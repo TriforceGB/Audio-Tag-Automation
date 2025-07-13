@@ -1,7 +1,7 @@
 A way to Submit tags
-A way to sumit fingerprints
-Download Via Playlist
-Delete files if exist?
-make sure to grab English Data?
-ctrl h tags?
+A way to Submit aliases
+A way to sumit fingerprints (is there a way to get the AcoustID when it doesn't exist?)
 When downloading an album have a red flag for a differnt album in the mix
+
+
+ctrl h tags?
