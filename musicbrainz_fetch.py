@@ -63,6 +63,7 @@ def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict:
     # Init all the Var
     title: str = ""
     sort_title: str = ""
+    original_title: str = ""
     artist: list = []
     album_artist: list = []
     album:str = ""
@@ -84,8 +85,9 @@ def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict:
     artist_id: dict = []
     
     # turn this into a def at some Point but Not Now
-    
     # Setting Title
+    # Original Title Without Aliases
+    original_title = recording['title']
     # Looking for the English One
     if len(recording['aliases']) > 0:
         for aliases in recording['aliases']:
@@ -96,16 +98,16 @@ def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict:
                 break
         # What to Do if No English Title found
         if title == "" and UseEnglishNames == True:
-            title = input(f"No English Title Found for '{recording['title']}', Enter Title or Leave Blank for Original: ")
+            title = input(f"No English Title Found for '{original_title}', Enter Title or Leave Blank for Original: ")
             sort_title = CleanName(title).lower()
     # If no Alias Exist
     elif UseEnglishNames == True:
-        title = input(f"No alias found, Enter Title or leave blank for '{recording['title']}': ")
+        title = input(f"No alias found, Enter Title or leave blank for '{original_title}': ")
         sort_title = CleanName(title).lower()
             
     # A Catch All for if no Name is Inputed
     if title == "":
-        title = recording['title']
+        title = original_title
         sort_title = CleanName(title).lower()
     
     # Grabing Artists 
@@ -113,9 +115,14 @@ def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict:
         # Looking for English Name of Artist
         artist_name: str = ""
         if len(artist_data['artist']['aliases']) > 0:
-            for aliases in artist_data['artist']['aliases']:
-                if aliases['locale'] == "en" or aliases['locale'] == "[Worldwide]":
-                    artist_name = aliases['name'] 
+            # First looks for a Primary English Name then Just an English Name
+            for Primary_loop in range(2):
+                for aliases in artist_data['artist']['aliases']:
+                    if aliases['primary'] == True or Primary_loop == 1: #Only Enter Name if its a Primary Name or its the second loop
+                        if aliases['locale'] == "en" or aliases['locale'] == "[Worldwide]":
+                            artist_name = aliases['name'] 
+                            break
+                if artist_name != "":
                     break
             # What to do if no English Named found
             if artist_name == "" and UseEnglishNames == True:
@@ -140,9 +147,14 @@ def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict:
     # Looking for English Name of Artist
     album_artist_name: str = ""
     if len(release['artist-credit'][0]['artist']['aliases']) > 0:
-        for aliases in release['artist-credit'][0]['artist']['aliases']:
-            if aliases['locale'] == "en" or aliases['locale'] == "[Worldwide]":
-                album_artist_name = aliases['name'] 
+        # First looks for a Primary English Name then Just an English Name
+        for Primary_loop in range(2):
+            for aliases in release['artist-credit'][0]['artist']['aliases']:
+                if aliases['primary'] == True or Primary_loop == 1: #Only Enter Name if its a Primary Name or its the second loop
+                    if aliases['locale'] == "en" or aliases['locale'] == "[Worldwide]":
+                        album_artist_name = aliases['name'] 
+                        break
+            if artist_name != "":
                 break
         # What to do if no English Named found
         if album_artist_name == "" and UseEnglishNames == True:
@@ -207,6 +219,7 @@ def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict:
     song_info: dict = {
         'title': title, 
         'sort_title': sort_title,
+        'original_title': original_title,
         'artist': artist,
         'album_artist': album_artist,
         'album': album, 
@@ -223,7 +236,6 @@ def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict:
         'MB_release_group_id': MB_release_group_id,
         'MB_release_id': MB_release_id,
         'MB_track_id': MB_track_id 
-        
     } 
     return song_info
 

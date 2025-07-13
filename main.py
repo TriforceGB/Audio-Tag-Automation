@@ -17,6 +17,7 @@ MUSICBRAINZ_PASS=getenv('MUSICBRAINZ_PASS')
 ManualTagging = False # If we Skip MusicBrainz and 
 ManualIntervention = True # If There is an decision That need User input do you ask or just pick the top Opition
 MatchingAlbum = True # If the Album should all be the same
+SubmitEdit = True #If Edits are Made to Tags Should they be Submited Back to the DB
 DownloadDir = 'D:\\Code\\Mp3-Automation\\downloads'
 MusicDir = 'D:\\Code\\Mp3-Automation\\Done' #'S:\\mediafiles\\music'
 
@@ -52,12 +53,17 @@ def main():
             music.musicbrainz_search(ManualIntervention)
         
         music.crop_cover(DownloadDir)
-        if music.manual_edit(ManualTagging):
-            pass
-            # Sending Changes to MusicBrainz Only if we added something manually
-        #     music.musicbrainz_submit()
-        # # Adding my Info to the AcoustID DB
-        # music.acoustid_submit_fingerprint()
+        
+        ManualTag = music.manual_edit(ManualTagging) # If we Changed anything Mannually
+        if SubmitEdit == True:
+            music.print_info()
+            if input("Enter Y to Submit Info to MusicBrainz and AcoustID: " ).lower() == "y":
+                #Sending Changes to MusicBrainz Only if we added something manually
+                if ManualTag:
+                    music.musicbrainz_submit()
+                # Adding my Info to the AcoustID DB
+                music.acoustid_submit_fingerprint(ACOUSTID_APP_API,ACOUSTID_USER_API)
+                music.acoustid_fingerprint(ACOUSTID_APP_API,ManualIntervention)
         music.add_tags()
         music.rename_song(DownloadDir)
         music.create_album_folder(MusicDir)

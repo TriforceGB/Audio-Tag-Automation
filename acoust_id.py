@@ -1,4 +1,4 @@
-from acoustid import lookup,fingerprint_file,submit
+from acoustid import lookup,fingerprint_file,submit,parse_lookup_result
 
 # for score, recording_id, title, artist in :
 #     print(score,recording_id,title,artist)
@@ -35,13 +35,18 @@ def GetFingerprint(path: str, AppAPI: str, ManualIntervention: bool) -> dict:
         'AcoustID': acoustid,
         'MB_track_id': rid,
     } 
-    return acoustid_info, fingerprint
+    return acoustid_info, fingerprint, duration
 
-def submitFingerprint():
-    pass #TODO
+def submitFingerprint(ACOUSTID_APP_API: str, ACOUSTID_USER_API: str, fingerprint: str, duration: int, song_info: dict) -> None:
+    submit(ACOUSTID_APP_API,ACOUSTID_USER_API, {
+        'fingerprint': fingerprint,
+        'duration': duration,
+        'mbid': song_info['MB_track_id'],
+        'title': song_info['original_title']
+    })
 
 if __name__ == "__main__":
-    path = "D:\\Code\\Mp3-Automation\\downloads\\テトリス ⧸ 重音テトSV.m4a"
+    path = "Done\KPop Demon Hunters (Soundtrack from the Netflix Film)\Soda Pop - KPop Demon Hunters Cast.m4a"
     
     ManualIntervention = False
     from os import getenv

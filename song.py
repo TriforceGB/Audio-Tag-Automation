@@ -7,7 +7,7 @@
 
 # File Imports
 from youtube_downloads import FetchSongInfo, DownloadAudio
-from acoust_id import GetFingerprint
+from acoust_id import GetFingerprint, submitFingerprint
 from musicbrainz_fetch import MusicBrainzFetch
 from genre_checker import CheckGenre
 from file_management import RenameSong,AlbumFolder,MoveSong,RemoveCover
@@ -17,6 +17,7 @@ class song:
     def __init__(self, url:str):
         self.url: str = url
         self.fingerprint: str
+        self.duration: int
         self.filename: str
         self.audio_path: str
         self.cover_path: str
@@ -25,6 +26,7 @@ class song:
         self.song_info: dict = {
                                 'title': "",
                                 'sort_title': "",
+                                'original_title': "",
                                 'artist': [],
                                 'album_artist': "",
                                 'album': "",
@@ -67,14 +69,12 @@ class song:
     
     # Get Fingerprint, RID, and AcoustID
     def acoustid_fingerprint(self,ACOUSTID_APP_API:str,ManualIntervention:bool) -> str:
-        print(self.audio_path)
-        acoustid_info, fingerprint = GetFingerprint(self.audio_path,ACOUSTID_APP_API,ManualIntervention)
+        acoustid_info, self.fingerprint, self.duration = GetFingerprint(self.audio_path,ACOUSTID_APP_API,ManualIntervention)
         self.song_info.update(acoustid_info)
-        self.fingerprint = fingerprint
-        return self.fingerprint
+        return self.fingerprint, self.duration
     # Submit Fingerprint Back to the DB
-    def acoustid_submit_fingerprint(self) -> None:
-        pass
+    def acoustid_submit_fingerprint(self, ACOUSTID_APP_API: str, ACOUSTID_USER_API: str) -> None:
+        submitFingerprint(ACOUSTID_APP_API, ACOUSTID_USER_API, self.fingerprint,self.duration,self.song_info)
     
     # Uses Recording ID to get all the MetaData
     def musicbrainz_search(self, ManualIntervention:bool) -> None:
