@@ -1,2 +1,9 @@
-
+Album Artist Should be a List
+change from a download Txt to a Download Json
+    Maybe with as Json Generator?
 ctrl h tags?
+
+
+download love machine
+download all of deltarune?
+download undertale track

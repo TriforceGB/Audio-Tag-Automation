@@ -14,7 +14,7 @@ def ManualAddTag(song_info: dict, ManualTagging: bool) -> bool:
                 print(f"info missing: {key}")
                 newList = []
                 while True:
-                    newvalue = input("Enter Value or Space to end: ").lower()
+                    newvalue = input("Enter Value or Space to end: ")
                     if newvalue == "":
                         break
                     else: 
@@ -27,7 +27,7 @@ def ManualAddTag(song_info: dict, ManualTagging: bool) -> bool:
             else:
                 print("----------")
                 print(f"info missing: {key}")
-                value = input(f"Enter Value: ").lower()
+                value = input(f"Enter Value: ")
                 if value != "":
                     ChangeMade == True
                     song_info[key] = value 
@@ -46,8 +46,10 @@ def EditTag(song_info: dict, audio_path: str, cover_path: str) -> None:
     song["\xa9ART"] = song_info['artist']
     song["aART"] = song_info['album_artist']
     song["\xa9alb"] = song_info['album']
-    song["disk"] = [(int(song_info['disc_number']), int(song_info['total_discs']))] 
-    song["trkn"] = [(int(song_info['track_number']), int(song_info['total_tracks']))]
+    if song_info['disc_number'] != "" and song_info['total_discs'] != "":
+        song["disk"] = [(int(song_info['disc_number']), int(song_info['total_discs']))] 
+    if song_info ['track_number'] != "" and song_info['total_tracks'] != "":
+        song["trkn"] = [(int(song_info['track_number']), int(song_info['total_tracks']))]
     song["\xa9day"] = song_info['release_date']
     song["\xa9gen"] = song_info['genre']
     song["covr"] = [cover]

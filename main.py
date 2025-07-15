@@ -14,10 +14,10 @@ MUSICBRAINZ_USER=getenv('MUSICBRAINZ_USER')
 MUSICBRAINZ_PASS=getenv('MUSICBRAINZ_PASS')
 
 
-ManualTagging = False # If we Skip MusicBrainz and 
-ManualIntervention = True # If There is an decision That need User input do you ask or just pick the top Opition
-MatchingAlbum = True # If the Album should all be the same
-SubmitEdit = True #If Edits are Made to Tags Should they be Submited Back to the DB
+ManualTagging = False #If we Skip MusicBrainz and AcoustID and Just Manually Tag
+ManualIntervention = False # Attempts To make All decisions for you (Don't use if your dealing with Covers, Non Enlgish Artist or anything where you might need to Manually Change Something)
+MatchingAlbum = False # Make Sure All the Songs Have the Same Album as the First Song
+SubmitToDB = False # If The Code Submit Tags and Fingerprints Back to DB 
 DownloadDir = 'D:\\Code\\Mp3-Automation\\downloads'
 MusicDir = 'D:\\Code\\Mp3-Automation\\Done' #'S:\\mediafiles\\music'
 
@@ -53,11 +53,12 @@ def main():
             music.musicbrainz_search(ManualIntervention)
             if FirstSong_Song_Info != None:
                 music.musicbrainz_album_correction(FirstSong_Song_Info)
-        
-        music.cover(DownloadDir)
-        
-        AddedManualTag = music.manual_edit(ManualTagging) # If we Changed anything Mannually
-        if SubmitEdit == True:
+                
+        # If we Changed anything Mannually       
+        AddedManualTag = music.manual_edit(ManualTagging)
+        music.cover(DownloadDir,ManualTagging)
+         
+        if SubmitToDB == True:
             music.print_info()
             if input("Enter Y to Submit Info to MusicBrainz and AcoustID: " ).lower() == "y":
                 #Sending Changes to MusicBrainz Only if we added something manually

@@ -1,4 +1,5 @@
 from os import path, rename, makedirs, remove
+from os.path import join
 from shutil import move
 from re import sub
 
@@ -9,9 +10,13 @@ def CleanName(name: str) -> str:
     return name 
 
 # Rename A File
-def RenameSong(audio_path: str, Download_Dir: str, title: str, artist: str) -> str:
+def RenameSong(audio_path: str, Download_Dir: str, title: str, artist_list: list) -> str:
+    if len(artist_list) == 1: # If there is only one artist, dont add a comma
+        artist:str = artist_list[0]
+    else:
+        artist:str = ', '.join(artist_list)
     newName = CleanName(f"{title} - {artist}.m4a")
-    newPath = path.join(Download_Dir,newName)
+    newPath = join(f"{Download_Dir}\\{newName}")
     rename(audio_path,newPath)
     return newName,newPath
 
@@ -31,3 +36,7 @@ def RemoveCover(cover_path: str, cropped_cover_path: str) -> None:
         remove(cover_path)
     if path.exists(cropped_cover_path):
         remove(cropped_cover_path)
+        
+if __name__ == "__main__":
+    path = r"downloads\Machine Love - Neuro-sama, K Man.m4a"
+    print(RenameSong(path,".\\Downloads","Machine Love",['Neuro-sama']))

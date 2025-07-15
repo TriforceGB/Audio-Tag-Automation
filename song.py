@@ -86,8 +86,17 @@ class song:
     def musicbrainz_submit(self) -> None:
         SubmitTag(self.song_info['MB_track_id'],self.song_info['genre'])
     
-    def cover(self,DownloadDir:str) -> str:
-        getCoverImage(self.song_info['MB_album_id'],self.cover_path)
+    def cover(self,DownloadDir:str,ManualTagging:bool) -> str:
+        # If to Use Which Cover (Only when Manual Tagging)
+        if ManualTagging == True: 
+            if input("Use MusicBrainz Cover? (y/n): ").lower() == "n":
+                UseMusicBrainzCover = False
+            else:
+                UseMusicBrainzCover = True
+        else:
+            UseMusicBrainzCover = True
+        if UseMusicBrainzCover == True:
+            getCoverImage(self.song_info['MB_album_id'],self.cover_path)
         self.cropped_cover_path = CropCover(self.cover_path,DownloadDir)
         
     def add_tags(self) -> None:
