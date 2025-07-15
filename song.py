@@ -8,8 +8,7 @@
 # File Imports
 from youtube_downloads import FetchSongInfo, DownloadAudio
 from acoust_id import GetFingerprint, submitFingerprint
-from musicbrainz_fetch import MusicBrainzFetch
-from genre_checker import CheckGenre
+from musicbrainz_fetch import MusicBrainzFetch,SubmitTag,MusicBrainzAlbumCorrection, getCoverImage
 from file_management import RenameSong,AlbumFolder,MoveSong,RemoveCover
 from cover_crop import CropCover
 from tagger import ManualAddTag,EditTag
@@ -41,7 +40,6 @@ class song:
                                 'MB_album_id': "",
                                 'MB_other_artist_id': "", 
                                 'MB_release_group_id': "",
-                                'MB_release_id': "",
                                 'MB_track_id': "",
                                 'AcoustID': ""
                                 }
@@ -80,11 +78,16 @@ class song:
     def musicbrainz_search(self, ManualIntervention:bool) -> None:
         MusicBrainz_info = MusicBrainzFetch(self.song_info['MB_track_id'],ManualIntervention)
         self.song_info.update(MusicBrainz_info)
+    # Edit the Album info to match the main Album
+    def musicbrainz_album_correction(self, FirstSong_Info:dict) -> None:
+        updated_info = MusicBrainzAlbumCorrection(self.song_info,FirstSong_Info)
+        self.song_info.update(updated_info)
     # Submits Added Edits to the DB
     def musicbrainz_submit(self) -> None:
-        pass
+        SubmitTag(self.song_info['MB_track_id'],self.song_info['genre'])
     
-    def crop_cover(self,DownloadDir:str) -> str:
+    def cover(self,DownloadDir:str) -> str:
+        getCoverImage(self.song_info['MB_album_id'],self.cover_path)
         self.cropped_cover_path = CropCover(self.cover_path,DownloadDir)
         
     def add_tags(self) -> None:

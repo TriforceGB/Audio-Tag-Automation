@@ -38,7 +38,8 @@ def main():
             song_list.append(song(url))
     
 
-    # Init MusicBrainz If we Using it
+    # Init MusicBrainz If we Using it.
+    FirstSong_Song_Info: dict = None
     if ManualTagging == False:
         MusicBrainz_init(MUSICBRAINZ_USER,MUSICBRAINZ_PASS)
     # # Going Through Each Song in the List
@@ -48,27 +49,31 @@ def main():
                 
         # Goes to the 2 DB if we Enable Tagging Via DB
         if ManualTagging == False:
-            
             music.acoustid_fingerprint(ACOUSTID_APP_API,ManualIntervention)
             music.musicbrainz_search(ManualIntervention)
+            if FirstSong_Song_Info != None:
+                music.musicbrainz_album_correction(FirstSong_Song_Info)
         
-        music.crop_cover(DownloadDir)
+        music.cover(DownloadDir)
         
-        ManualTag = music.manual_edit(ManualTagging) # If we Changed anything Mannually
+        AddedManualTag = music.manual_edit(ManualTagging) # If we Changed anything Mannually
         if SubmitEdit == True:
             music.print_info()
             if input("Enter Y to Submit Info to MusicBrainz and AcoustID: " ).lower() == "y":
                 #Sending Changes to MusicBrainz Only if we added something manually
-                if ManualTag:
+                if AddedManualTag == True:
                     music.musicbrainz_submit()
                 # Adding my Info to the AcoustID DB
                 music.acoustid_submit_fingerprint(ACOUSTID_APP_API,ACOUSTID_USER_API)
-                music.acoustid_fingerprint(ACOUSTID_APP_API,ManualIntervention)
+                if music.song_info['AcoustID'] == "":
+                    music.acoustid_fingerprint(ACOUSTID_APP_API,ManualIntervention)
         music.add_tags()
         music.rename_song(DownloadDir)
         music.create_album_folder(MusicDir)
         music.move_song()
         music.remove_cover()
+        if MatchingAlbum == True and FirstSong_Song_Info == None:
+            FirstSong_Song_Info = music.song_info
         
             
 

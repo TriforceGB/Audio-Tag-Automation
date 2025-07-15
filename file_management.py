@@ -22,9 +22,6 @@ def AlbumFolder(Music_Dir: str, album: str) -> str:
 
 def MoveSong(audio_path: str, Song_Folder: str, filename: str) -> None:
     newPath = path.join(Song_Folder,filename)
-    print(filename)
-    print(Song_Folder)
-    print(newPath)
     if path.exists(newPath):
         remove(newPath)
     move(audio_path, newPath)

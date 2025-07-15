@@ -1,16 +1,14 @@
-from acoustid import lookup,fingerprint_file,submit,parse_lookup_result
-
-# for score, recording_id, title, artist in :
-#     print(score,recording_id,title,artist)
+from acoustid import lookup,fingerprint_file,submit
 
 def GetFingerprint(path: str, AppAPI: str, ManualIntervention: bool) -> dict:
     duration, fingerprint = fingerprint_file(path)
     lookup_data = lookup(AppAPI, fingerprint, duration)
+    print(lookup_data)
     if len(lookup_data['results']) > 1 and ManualIntervention:
         print("more then 1 Match Found Pick which one you want")
         count=1
         for result in lookup_data['results']:
-            print(f"{count}) {result['recordings'][0]['title']}, {result['recordings'][0]['id']}") # Takes the first Recording Title
+            print(f"{count}) {result['recordings'][0]['title'] if 'title' in result['recordings'][0] else 'Unknown Name'}, {result['recordings'][0]['id'] if 'id' in result['recordings'][0] else 'Unknown ID'}") # Takes the first Recording Title
             count += 1
         while True:
             try: 
@@ -46,8 +44,7 @@ def submitFingerprint(ACOUSTID_APP_API: str, ACOUSTID_USER_API: str, fingerprint
     })
 
 if __name__ == "__main__":
-    path = "Done\KPop Demon Hunters (Soundtrack from the Netflix Film)\Soda Pop - KPop Demon Hunters Cast.m4a"
-    
+    path = "Done\\KPop Demon Hunters (Soundtrack from the Netflix Film)\\Soda Pop - KPop Demon Hunters Cast.m4a"
     ManualIntervention = False
     from os import getenv
     ACOUSTID_USER_API=getenv('ACOUSTID_USER_API')
