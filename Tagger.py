@@ -8,7 +8,7 @@ from genre_checker import CheckGenre
 def ManualAddTag(song_info: dict, ManualTagging: bool) -> bool:
     ChangeMade: bool = False
     for key, value in song_info.items():
-        if ((value == "" or value == []) and key != 'MB_other_artist_id' ) or ManualTagging == True:
+        if ((value == "" or value == []) and key != 'MB_other_artist_id' and key != 'AcoustID' ) or ManualTagging == True:
             if key == "artist" or key == "album_artist" or key == "genre":
                 print("----------")
                 print(f"info missing: {key}")

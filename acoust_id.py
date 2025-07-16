@@ -1,7 +1,20 @@
 from acoustid import lookup,fingerprint_file,submit
 
 def GetFingerprint(path: str, AppAPI: str, ManualIntervention: bool) -> dict:
-    duration, fingerprint = fingerprint_file(path)
+    try:
+        duration, fingerprint = fingerprint_file(path)
+    except Exception as e:
+        print("Something went wrong with the request: %s" % e)
+        print("Either Enter Recording ID Manually or Press Enter to Enter The Tag Manually")
+        rid = input("Recording ID: ")
+        fingerprint = ""
+        duration = 0
+        acoustid_info: dict = {
+        'AcoustID': "",
+        'MB_track_id': rid,
+        } 
+        return acoustid_info, fingerprint, duration
+        
     lookup_data = lookup(AppAPI, fingerprint, duration)
     print(lookup_data)
     if len(lookup_data['results']) > 1 and ManualIntervention:
@@ -36,12 +49,15 @@ def GetFingerprint(path: str, AppAPI: str, ManualIntervention: bool) -> dict:
     return acoustid_info, fingerprint, duration
 
 def submitFingerprint(ACOUSTID_APP_API: str, ACOUSTID_USER_API: str, fingerprint: str, duration: int, song_info: dict) -> None:
-    submit(ACOUSTID_APP_API,ACOUSTID_USER_API, {
-        'fingerprint': fingerprint,
-        'duration': duration,
-        'mbid': song_info['MB_track_id'],
-        'title': song_info['original_title']
-    })
+    try:
+        submit(ACOUSTID_APP_API,ACOUSTID_USER_API, {
+            'fingerprint': fingerprint,
+            'duration': duration,
+            'mbid': song_info['MB_track_id'],
+            'title': song_info['original_title']
+        })
+    except Exception as e:
+        print(e)
 
 if __name__ == "__main__":
     path = "Done\\KPop Demon Hunters (Soundtrack from the Netflix Film)\\Soda Pop - KPop Demon Hunters Cast.m4a"

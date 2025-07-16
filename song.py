@@ -27,7 +27,7 @@ class song:
                                 'sort_title': "",
                                 'original_title': "",
                                 'artist': [],
-                                'album_artist': "",
+                                'album_artist': [],
                                 'album': "",
                                 'disc_number': "",
                                 'total_discs': "",
@@ -86,9 +86,9 @@ class song:
     def musicbrainz_submit(self) -> None:
         SubmitTag(self.song_info['MB_track_id'],self.song_info['genre'])
     
-    def cover(self,DownloadDir:str,ManualTagging:bool) -> str:
+    def cover(self,DownloadDir:str,ManualTagging:bool,ManualIntervention:bool) -> str:
         # If to Use Which Cover (Only when Manual Tagging)
-        if ManualTagging == True: 
+        if ManualTagging == True or ManualIntervention == True: 
             if input("Use MusicBrainz Cover? (y/n): ").lower() == "n":
                 UseMusicBrainzCover = False
             else:

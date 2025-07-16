@@ -10,7 +10,7 @@ def CropCover(cover_path: str, download_path: str) -> str: # Crops to 1:1 Center
     bottom = height
     
     cover_path = download_path+'\\cover.jpg'
-    
+    cover = cover.convert("RGB")
     cropCover = cover.crop((left,top,right,bottom))
     cropCover.save(cover_path)
     return cover_path

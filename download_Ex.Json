@@ -1,0 +1,30 @@
+{
+    "DownloadDir": "\\Path\\To\\Temp\\Download\\Storage",
+    "MusicDir": "\\Path\\To\\Stored\\Music",
+    "Groups": [
+        {
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": true,
+            "SubmitToDB": true,
+            "Starting_Info": {
+                "MB_album_id": "album_id Goes Here",
+                "album_artist": [
+                    "Album Artist Names Goes Here"
+                ]
+            },
+            "URLs": [
+                "Youtube Link to Playlist/Songs Goes Here"
+            ]
+        },
+        {
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": false,
+            "SubmitToDB": false,
+            "URLs": [
+                "Youtube Link to Playlist/Songs Goes Here"
+            ]
+        }
+    ]
+}

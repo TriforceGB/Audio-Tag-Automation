@@ -1,0 +1,15 @@
+{
+    "DownloadDir": "D:\\Code\\Mp3-Automation\\downloads",
+    "MusicDir": "D:\\Code\\Mp3-Automation\\Done",
+    "Groups": [
+        {
+            "ManualTagging": true,
+            "ManualIntervention": false,
+            "MatchingAlbum": false,
+            "SubmitToDB": false,
+            "URLs": [
+                "https://youtu.be/DqbzExv7wNI?si=6Qte2wEo8pS2IjOn"
+            ]
+        }
+    ]
+}
