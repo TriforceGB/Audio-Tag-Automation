@@ -1,0 +1,152 @@
+{
+    "DownloadDir": "\\Path\\To\\Temp\\Download\\Storage",
+    "MusicDir": "\\Path\\To\\Stored\\Music",
+    "Groups": [
+        {
+            "Name": "Project Sekai",
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": false,
+            "ManualID": false,
+            "SubmitToDB": true,
+            "AddGenre": false,
+            "URLs": [
+                "Touhou Wonderland",
+                "Ego Rock",
+                "Odore Orchestra",
+                "Theme of Niccori Survey Team",
+                "Darling Darling",
+                "Vampire",
+                "Idenity",
+                "パラソルサイダー",
+                "オペラ！スペースオペラ！",
+                "キティ",
+                "Bug",
+                "ロウワ ー",
+                "worldwide wander",
+                "Goodbye Sengen"
+            ]
+        },
+        {
+            "Name": "Funny Bot",
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": false,
+            "ManualID": false,
+            "SubmitToDB": true,
+            "AddGenre": false,
+            "URLs": [
+                "I Don't Want to be an Engineer"
+            ]
+        },
+        {
+            "Name": "Yakuza",
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": false,
+            "ManualID": false,
+            "SubmitToDB": true,
+            "AddGenre": false,
+            "URLs": [
+                "Baka Mitai"
+            ]
+        },
+        {
+            "Name": "Hololive",
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": false,
+            "ManualID": false,
+            "SubmitToDB": true,
+            "AddGenre": false,
+            "URLs": [
+                "Mind Craft Cover",
+                "What an Amazing Swing",
+                "Magic no Shojo",
+                "Born to be BauDOL",
+                "I'm Your Treasure Box",
+                "Dead Ma'am Chest",
+                "美少女無罪♡パイレーツ",
+                "Carbonated Love",
+                "Ghost",
+                "HELP!!",
+                "Howling",
+                "Odyssey",
+                "Shiny Smiley Story",
+                "ソワレ",
+                "Stellar Stellar",
+                "Bibbidiba",
+                "Palette Cover"
+            ]
+        },
+        {
+            "Name": "Legally Bonded",
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": false,
+            "ManualID": false,
+            "SubmitToDB": true,
+            "AddGenre": false,
+            "URLs": [
+                "There! Right There!"
+            ]
+        },
+        {
+            "Name": "TouHou",
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": false,
+            "ManualID": false,
+            "SubmitToDB": true,
+            "AddGenre": false,
+            "URLs": [
+                "https://youtu.be/IuABDADGeP0?si=HWZEZNPV6Qg7R_Ma",
+                "Night of Nights"
+            ]
+        },
+        {
+            "Name": "Xenoblade One",
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": true,
+            "SubmitToDB": true,
+            "AddGenre": false,
+            "Starting_Info": {
+                "MB_album_id": "album_id Goes Here",
+                "album_artist": [
+                    "Album Artist Names Goes Here"
+                ]
+            },
+            "URLs": [
+                "A Step Away",
+                "Future Awaits",
+                "Beyond the Sky",
+                "Drifting Soul",
+                "One Last You",
+                "Where we Belong",
+                "You Will Know Our Names X3",
+                "You will Know hour Names X1",
+                "You will Recall Our Names",
+                "Drifting Souls Remix XC3",
+                "XC1 Remix"
+            ]
+        },
+        {
+            "Name": "Mario",
+            "ManualTagging": false,
+            "ManualIntervention": false,
+            "MatchingAlbum": true,
+            "SubmitToDB": true,
+            "AddGenre": false,
+            "Starting_Info": {
+                "MB_album_id": "album_id Goes Here",
+                "album_artist": [
+                    "Album Artist Names Goes Here"
+                ]
+            },
+            "URLs": [
+                "Rainbow Road Mario Kart World"
+            ]
+        }
+    ]
+}

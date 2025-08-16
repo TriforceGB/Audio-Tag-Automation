@@ -17,28 +17,37 @@ def GetFingerprint(path: str, AppAPI: str, ManualIntervention: bool) -> dict:
         
     lookup_data = lookup(AppAPI, fingerprint, duration)
     print(lookup_data)
-    if len(lookup_data['results']) > 1 and ManualIntervention:
-        print("more then 1 Match Found Pick which one you want")
-        count=1
-        for result in lookup_data['results']:
-            print(f"{count}) {result['recordings'][0]['title'] if 'title' in result['recordings'][0] else 'Unknown Name'}, {result['recordings'][0]['id'] if 'id' in result['recordings'][0] else 'Unknown ID'}") # Takes the first Recording Title
-            count += 1
-        while True:
-            try: 
-                correctSong = int(input("Select the Song you Want: "))-1
-                break
-            except Exception as e:
-                print(e)
-        rid = lookup_data['results'][correctSong]['recordings'][correctSong]['id']
-        acoustid = lookup_data['results'][correctSong]['id']
-        
-    elif len(lookup_data['results']) == 0:
+    if len(lookup_data['results']) == 0:
         print("No Match Found")
         print("Either Enter Recording ID Manually or Press Enter to Enter The Tag Manually")
         rid = input("Recording ID: ")
         acoustid = ""
+    elif 'recordings' not in lookup_data['results'][0]: # Temp fix i'm not sure if this cover all issues
+        print("Recording Not Found in DB")
+        print("Either Enter Recording ID Manually or Press Enter to Enter The Tag Manually")
+        rid = input("Recording ID: ")
+        acoustid = ""
+    elif len(lookup_data['results']) > 1 and ManualIntervention:
+        print("more then 1 Match Found Pick which one you want")
+        count=1
+        for result in lookup_data['results']:
+            if 'recordings' in result: #again another tmp fix for this no recording issue
+                print(f"{count}) {result['recordings'][0]['title'] if 'title' in result['recordings'][0] else 'Unknown Name'}, {result['recordings'][0]['id'] if 'id' in result['recordings'][0] else 'Unknown ID'}") # Takes the first Recording Title
+                count += 1
+        while True:
+            try: 
+                correctSong = input("Select the Song you Want: ")
+                if len(correctSong) == 36: #The Length of an AcoustID
+                    rid = correctSong
+                    acoustid = correctSong
+                else:
+                    correctSong = int(correctSong)-1
+                    rid = lookup_data['results'][correctSong]['recordings'][correctSong]['id']
+                    acoustid = lookup_data['results'][correctSong]['id']
+                break
+            except Exception as e:
+                print(e)
     else:
-        print()
         rid = lookup_data['results'][0]['recordings'][0]['id']
         acoustid = lookup_data['results'][0]['id']
         

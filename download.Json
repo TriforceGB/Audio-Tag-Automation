@@ -1,14 +1,17 @@
 {
     "DownloadDir": "D:\\Code\\Mp3-Automation\\downloads",
-    "MusicDir": "D:\\Code\\Mp3-Automation\\Done",
+    "MusicDir": "S:\\mediafiles\\music",
     "Groups": [
         {
-            "ManualTagging": true,
-            "ManualIntervention": false,
+            "Name": "Group Name Goes Here (Has No Purpose Other then to Help You Keep Track)",
+            "ManualTagging": false,
+            "ManualIntervention": true,
             "MatchingAlbum": false,
+            "ManualID": true,
             "SubmitToDB": false,
+            "AddGenre": false,
             "URLs": [
-                "https://youtu.be/DqbzExv7wNI?si=6Qte2wEo8pS2IjOn"
+                "https://youtu.be/mXfnndMDFPs?si=2jNh2eAUU_r2eu3e"
             ]
         }
     ]

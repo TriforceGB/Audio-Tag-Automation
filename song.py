@@ -48,9 +48,9 @@ class song:
         for k, v in self.song_info.items():
             print(f"{k}: {v}")
     # Manually edits song info if they are missing
-    def manual_edit(self, ManualTagging:bool) -> bool:
+    def manual_edit(self, ManualTagging:bool,AddGenre:bool) -> bool:
         self.print_info()
-        ManualTagging_info, ChangeMade = ManualAddTag(self.song_info,ManualTagging)
+        ManualTagging_info, ChangeMade = ManualAddTag(self.song_info,ManualTagging,AddGenre)
         self.song_info.update(ManualTagging_info)
         return ChangeMade
         
@@ -75,8 +75,8 @@ class song:
         submitFingerprint(ACOUSTID_APP_API, ACOUSTID_USER_API, self.fingerprint,self.duration,self.song_info)
     
     # Uses Recording ID to get all the MetaData
-    def musicbrainz_search(self, ManualIntervention:bool) -> None:
-        MusicBrainz_info = MusicBrainzFetch(self.song_info['MB_track_id'],ManualIntervention)
+    def musicbrainz_search(self, ManualIntervention:bool, AddGenre:bool) -> None:
+        MusicBrainz_info = MusicBrainzFetch(self.song_info['MB_track_id'],ManualIntervention,AddGenre)
         self.song_info.update(MusicBrainz_info)
     # Edit the Album info to match the main Album
     def musicbrainz_album_correction(self, FirstSong_Info:dict) -> None:
@@ -88,7 +88,7 @@ class song:
     
     def cover(self,DownloadDir:str,ManualTagging:bool,ManualIntervention:bool) -> str:
         # If to Use Which Cover (Only when Manual Tagging)
-        if ManualTagging == True or ManualIntervention == True: 
+        if ManualTagging == True: 
             if input("Use MusicBrainz Cover? (y/n): ").lower() == "n":
                 UseMusicBrainzCover = False
             else:

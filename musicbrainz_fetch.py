@@ -7,11 +7,12 @@ from file_management import CleanName
 
 # There prob a better way to init this but idc
 def MusicBrainz_init(MUSICBRAINZ_USER:str, MUSICBRAINZ_PASS:str):
-    musicbrainzngs.set_useragent("RTX Auto Audio Tagger 3090 Inator", "0.5", "Zach.Schultz.2.0.1@gmail.com")
+    # Unhard code Email
+    musicbrainzngs.set_useragent("Auto Audio Tagger Inator 3000", "0.5", "Zach.Schultz.2.0.1@gmail.com")
     musicbrainzngs.auth(MUSICBRAINZ_USER, MUSICBRAINZ_PASS)
     musicbrainzngs.set_format(fmt='json')
 
-def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict: 
+def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool, AddGenre: bool) -> dict: 
     # Take the Recording ID and find the rest of the MetaData
     while True: #TODO Set this to some Time Out 
         # Calling the API to get all the Info I need 
@@ -189,16 +190,17 @@ def MusicBrainzFetch(RecordingID: str, UseEnglishNames: bool) -> dict:
         
             
     # Grabing Genres
-    if len(recording['tags']) > 0: # Uses the Tags on the Recording First
-        tags = recording['tags']
-    elif len(release['tags']) > 0: # If Recording Tags don't Exist Use the ones on the Release 
-        tags = release['tags']
-    elif len(release_group['tags']) > 0: # If Release Tags don't Exist Use the ones on the Release Group
-        tags = release_group['tags']
+    if AddGenre == True:
+        if len(recording['tags']) > 0: # Uses the Tags on the Recording First
+            tags = recording['tags']
+        elif len(release['tags']) > 0: # If Recording Tags don't Exist Use the ones on the Release 
+            tags = release['tags']
+        elif len(release_group['tags']) > 0: # If Release Tags don't Exist Use the ones on the Release Group
+            tags = release_group['tags']
     
-    for tag in tags: # Check all the Tags for the Genres
-        if CheckGenre(tag['name']):
-            genre.append(tag['name'])
+        for tag in tags: # Check all the Tags for the Genres
+            if CheckGenre(tag['name']):
+                genre.append(tag['name'])
 
     # Adding all the Var to the Dict
     disc_number = recording_media['position']

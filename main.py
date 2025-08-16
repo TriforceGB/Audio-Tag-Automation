@@ -35,9 +35,11 @@ def main():
         ManualIntervention = Groups['ManualIntervention'] # Attempts To make All decisions for you (Don't use if your dealing with Covers, Non Enlgish Artist or anything where you might need to Manually Change Something)
         MatchingAlbum = Groups['MatchingAlbum'] # Make Sure All the Songs Have the Same Album as the First Song
         SubmitToDB = Groups['SubmitToDB'] # If The Code Submit Tags and Fingerprints Back to DB 
+        AddGenre = Groups['AddGenre']
+        ManualID = Groups['ManualID']
         FirstSong_Song_Info: dict = None
-        if 'Starting_Info' in Groups:
-            FirstSong_Song_Info = Groups['Starting_Info']
+        if 'StartingInfo' in Groups:
+            FirstSong_Song_Info = Groups['StartingInfo']
 
         song_list: list = []
         for url in Groups['URLs']:
@@ -60,16 +62,19 @@ def main():
                     
             # Goes to the 2 DB if we Enable Tagging Via DB
             if ManualTagging == False:
-                music.acoustid_fingerprint(ACOUSTID_APP_API,ManualIntervention)
+                if ManualID == True:
+                    music.song_info['MB_track_id'] = input("Recording ID: ")
+                else:
+                    music.acoustid_fingerprint(ACOUSTID_APP_API,ManualIntervention)
                 if music.song_info['MB_track_id'] == "":
                     ManualTagging = True # Enable its for this Song if we are Manually Tagging
                 else:
-                    music.musicbrainz_search(ManualIntervention)
-                    if FirstSong_Song_Info != None:
-                        print("CONNECTISADFKLJASDJ:LKASDJKLASJL:D")
-                        music.musicbrainz_album_correction(FirstSong_Song_Info)
+                    music.musicbrainz_search(ManualIntervention,AddGenre)
+                    
+            if FirstSong_Song_Info != None:
+                music.musicbrainz_album_correction(FirstSong_Song_Info)
                         
-            AddedManualTag = music.manual_edit(ManualTagging) 
+            AddedManualTag = music.manual_edit(ManualTagging,AddGenre) 
             music.cover(DownloadDir,ManualTagging,ManualIntervention)
             
             
@@ -82,9 +87,12 @@ def main():
                 if AddedManualTag == True:
                     music.musicbrainz_submit()
                 # Adding my Info to the AcoustID DB
-                music.acoustid_submit_fingerprint(ACOUSTID_APP_API,ACOUSTID_USER_API)
-                if music.song_info['AcoustID'] == "":
-                    music.acoustid_fingerprint(ACOUSTID_APP_API,ManualIntervention)
+                if ManualID == True:
+                    pass # Will submit to DB Later
+                else:
+                    music.acoustid_submit_fingerprint(ACOUSTID_APP_API,ACOUSTID_USER_API)
+                    # if music.song_info['AcoustID'] == "":
+                    #     music.acoustid_fingerprint(ACOUSTID_APP_API,ManualIntervention)
             ManualTagging = Groups['ManualTagging'] # Resetting the ManualTagging 
             music.add_tags()
             music.rename_song(DownloadDir)

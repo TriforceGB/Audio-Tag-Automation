@@ -5,10 +5,10 @@ from genre_checker import CheckGenre
 # Uses Mutagen to Tag all the M4A
 # Only Support M4A becuase idk i'm wried
 
-def ManualAddTag(song_info: dict, ManualTagging: bool) -> bool:
+def ManualAddTag(song_info: dict, ManualTagging: bool, AddGenre: bool) -> bool:
     ChangeMade: bool = False
     for key, value in song_info.items():
-        if ((value == "" or value == []) and key != 'MB_other_artist_id' and key != 'AcoustID' ) or ManualTagging == True:
+        if ((value == "" or value == []) and key != 'MB_other_artist_id' and key != 'AcoustID' and (key == "genre" and AddGenre == True)) or ManualTagging == True:
             if key == "artist" or key == "album_artist" or key == "genre":
                 print("----------")
                 print(f"info missing: {key}")

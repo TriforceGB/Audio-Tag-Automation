@@ -3,11 +3,14 @@
     "MusicDir": "\\Path\\To\\Stored\\Music",
     "Groups": [
         {
+            "Name": "Group Name Goes Here (Has No Purpose Other then to Help You Keep Track)",
             "ManualTagging": false,
             "ManualIntervention": false,
             "MatchingAlbum": true,
+            "ManualID": false,
             "SubmitToDB": true,
-            "Starting_Info": {
+            "AddGenre": false,
+            "StartingInfo": {
                 "MB_album_id": "album_id Goes Here",
                 "album_artist": [
                     "Album Artist Names Goes Here"
@@ -18,10 +21,13 @@
             ]
         },
         {
+            "Name": "Group Name Goes Here (Has No Purpose Other then to Help You Keep Track)",
             "ManualTagging": false,
             "ManualIntervention": false,
             "MatchingAlbum": false,
+            "ManualID": false,
             "SubmitToDB": false,
+            "AddGenre": false,
             "URLs": [
                 "Youtube Link to Playlist/Songs Goes Here"
             ]
